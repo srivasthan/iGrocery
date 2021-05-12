@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">IGrocery</string>
+    <string name="safe_grocery_online">Safe Shopping In Online</string>
+    <string name="searchHintText_searchToolbar">Search Groceries or Products</string>
+    <string name="item_name">Blue Cut-Women Custome</string>
+    <string name="item_amount">₹ 170</string>
+    <string name="btn_add">ADD</string>
+    <string name="tittle"><![CDATA[Fashion & Dress]]></string>
+    <string name="item_amount_kg">₹ 17 / kg</string>
+    <string name="item_description">Bring home the Fresh Tomatoes. Tomates contain Vitamin C and A in adequate quantity. Tomatoes are used in daily purposes.</string>
+    <string name="txt_cart">My Cart (4)</string>
+    <string name="txt_pin">Pincode : </string>
+    <string name="btn_checkout">Checkout</string>
+    <string name="txt_offer"><![CDATA[Now GET EXTRA 5% OFF with Credit Card. T&C.]]></string>
+    <string name="txt_subtotal">Sub Total :   </string>
+    <string name="txt_tax">Tax 5% :   </string>
+    <string name="txt_service">Service :   </string>
+    <string name="txt_more">More</string>
+    <string name="like">Favourites</string>
+</resources>
