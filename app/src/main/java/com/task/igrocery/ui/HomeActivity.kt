@@ -233,7 +233,7 @@ class HomeActivity : AppCompatActivity() {
             .setCancelable(false)
             .setPositiveButton(
                 "Yes"
-            ) { _, id -> finish() }
+            ) { _, id -> finishAffinity() }
             .setNegativeButton(
                 "No"
             ) { dialog, _ -> dialog.cancel() }
