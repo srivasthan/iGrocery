@@ -12,16 +12,20 @@ import android.net.NetworkInfo
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.View
-import android.view.animation.AnimationUtils
-import android.widget.*
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mancj.materialsearchbar.MaterialSearchBar
 import com.task.igrocery.Adapter.GroceryAdapter
 import com.task.igrocery.Model.GroceryList
 import com.task.igrocery.R
@@ -32,11 +36,11 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
-
-class HomeActivity : AppCompatActivity() {
-    private lateinit var search: EditText
-    private lateinit var imgMic: ImageView
+class HomeActivity : AppCompatActivity(), MaterialSearchBar.OnSearchActionListener {
+    private lateinit var searchView: MaterialSearchBar
     private lateinit var groceryAdapter: GroceryAdapter
+    private lateinit var imgMic: ImageView
+    private lateinit var imgCart: ImageView
     private val RECORD_REQUEST_CODE = 101
     private val REQUEST_CODE_SPEECH_INPUT = 1
 
@@ -46,27 +50,43 @@ class HomeActivity : AppCompatActivity() {
 
         val itemList: RecyclerView = findViewById(R.id.recyclerView)
         val likeList: ImageView = findViewById(R.id.img_like)
-        val imgBack: ImageView = findViewById(R.id.img_back)
-        val appTittle: TextView = findViewById(R.id.txt_app_name)
-        val imgSearch: ImageView = findViewById(R.id.img_search)
-        val rtlSearch: RelativeLayout = findViewById(R.id.ly_search)
-        search = findViewById(R.id.searchEditText)
-        val imgCart: ImageView = findViewById(R.id.img_cart)
-        imgMic = findViewById(R.id.ic_mic)
+        searchView = findViewById(R.id.img_search)
+        searchView.setOnSearchActionListener(this)
+        imgMic = findViewById(R.id.img_mic)
+        imgCart = findViewById(R.id.img_cart)
 
         val progressBar = ProgressDialog(this)
         progressBar.setCancelable(false)
         progressBar.setMessage("Loading ...")
         progressBar.show()
 
-
-        imgSearch.setOnClickListener {
-            imgSearch.visibility = View.GONE
-            appTittle.visibility = View.GONE
-            val animation = AnimationUtils.loadAnimation(this, R.anim.slide_left_right)
-            rtlSearch.visibility = View.VISIBLE
-            rtlSearch.startAnimation(animation)
+        searchView.setOnClickListener {
+            searchView.openSearch()
         }
+
+        searchView.addTextChangeListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                charSequence: CharSequence?,
+                i: Int,
+                i1: Int,
+                i2: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                charSequence: CharSequence?,
+                i: Int,
+                i1: Int,
+                i2: Int
+            ) {
+
+            }
+
+            override fun afterTextChanged(editable: Editable?) {
+                val query: String = editable.toString().trim()
+                groceryAdapter.filter.filter(query)
+            }
+        })
 
         val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
@@ -104,35 +124,8 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        imgCart.setOnClickListener {
-            val intent = Intent(this, CartActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        search.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val query: String = s.toString().trim()
-                groceryAdapter.filter.filter(query)
-            }
-        })
-
-        imgBack.setOnClickListener {
-            rtlSearch.visibility = View.GONE
-            val animation = AnimationUtils.loadAnimation(this, R.anim.slide_right_left)
-            appTittle.visibility = View.VISIBLE
-            imgSearch.visibility = View.VISIBLE
-            rtlSearch.startAnimation(animation)
-        }
-
         imgMic.setOnClickListener {
-
+            searchView.openSearch()
             val permission = ContextCompat.checkSelfPermission(this, RECORD_AUDIO)
 
             if (permission != PackageManager.PERMISSION_GRANTED) {
@@ -164,21 +157,13 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
-    }
 
-    override fun onActivityResult(
-        requestCode: Int, resultCode: Int,
-        @Nullable data: Intent?
-    ) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val result = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS
-                )
-                search.setText(Objects.requireNonNull(result)?.get(0))
-            }
+        imgCart.setOnClickListener {
+            val intent = Intent(this, CartActivity::class.java)
+            startActivity(intent)
+            finish()
         }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -221,6 +206,43 @@ class HomeActivity : AppCompatActivity() {
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
                 }
                 return
+            }
+        }
+    }
+
+    override fun onActivityResult(
+        requestCode: Int, resultCode: Int,
+        @Nullable data: Intent?
+    ) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                val matches =
+                    data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                if (matches != null && matches.size > 0) {
+                    val searchWrd = matches[0]
+                    if (!TextUtils.isEmpty(searchWrd)) {
+                        searchView.text = searchWrd
+                    }
+                }
+            }
+        }
+    }
+
+
+    override fun onSearchStateChanged(enabled: Boolean) {
+        val s = if (enabled) "enabled" else "disabled"
+        // Toast.makeText(this@HomeActivity, "Search $s", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onSearchConfirmed(text: CharSequence) {
+        startSearch(text.toString(), true, null, true)
+    }
+
+    override fun onButtonClicked(buttonCode: Int) {
+        when (buttonCode) {
+            MaterialSearchBar.BUTTON_BACK -> {
+                searchView.closeSearch()
             }
         }
     }

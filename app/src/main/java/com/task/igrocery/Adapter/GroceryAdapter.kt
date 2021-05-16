@@ -10,7 +10,6 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.like.LikeButton
 import com.task.igrocery.Model.CartModel
 import com.task.igrocery.Model.LikeModel
 import com.task.igrocery.Model.Product
@@ -76,7 +75,8 @@ class GroceryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     var quantity: String = "1"
     var id: Int = 0
     var likeId: Int = 0
-    private val likeImage: LikeButton = itemView.findViewById(R.id.isLoved)
+    private val likeImage: ImageView = itemView.findViewById(R.id.isLoved)
+    private val unLikeImage: ImageView = itemView.findViewById(R.id.ic_unlike)
     private val itemImage: ImageView = itemView.findViewById(R.id.previewIcon)
     private val addButton: AppCompatButton = itemView.findViewById(R.id.btnPurchase)
     private val minusButton: Button = itemView.findViewById(R.id.btn_minus)
@@ -97,7 +97,10 @@ class GroceryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         if (likeDataBase.listLike().size > 0) {
             for (element in likeDataBase.listLike()) {
-                likeImage.isLiked = element.name == product.name
+                if (element.name == product.name) {
+                    likeImage.visibility = View.GONE
+                    unLikeImage.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -197,36 +200,32 @@ class GroceryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         likeImage.setOnClickListener {
 
+            likeImage.visibility = View.GONE
+            unLikeImage.visibility = View.VISIBLE
+            likeDataBase.addLikeItems(
+                LikeModel(
+                    product.image,
+                    product.name,
+                    product.special,
+                    "liked"
+                )
+            )
+        }
+
+        unLikeImage.setOnClickListener {
+
             if (likeDataBase.listLike().size > 0) {
                 for (element in likeDataBase.listLike()) {
                     if (element.name.equals(product.name)) {
                         likeId = element.id
-                        likeImage.isLiked = false
+                        likeImage.visibility = View.VISIBLE
+                        unLikeImage.visibility = View.GONE
                         likeDataBase.deleteLikeProduct(likeId)
-                    } else {
-                        likeImage.isLiked = true
-                        likeDataBase.addLikeItems(
-                            LikeModel(
-                                product.image,
-                                product.name,
-                                product.special,
-                                "liked"
-                            )
-                        )
                     }
                 }
-            } else {
-                likeImage.isLiked = true
-                likeDataBase.addLikeItems(
-                    LikeModel(
-                        product.image,
-                        product.name,
-                        product.special,
-                        "liked"
-                    )
-                )
             }
         }
+
     }
 
 }

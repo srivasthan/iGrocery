@@ -4,10 +4,59 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:elevation="6dp"
     android:orientation="vertical"
     tools:context=".ui.HomeActivity">
 
-    <include layout="@layout/header" />
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        app:cardCornerRadius="15dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <com.mancj.materialsearchbar.MaterialSearchBar
+                android:id="@+id/img_search"
+                style="@style/MaterialSearchBarLight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/img_mic"
+                app:mt_clearIconDrawable="@android:color/transparent"
+                app:mt_hint="Search Clothes..."
+                app:mt_placeholder="@string/app_name"
+                app:mt_placeholderColor="@color/black" />
+
+            <ImageView
+                android:id="@+id/img_mic"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:layout_toStartOf="@+id/img_cart"
+                android:padding="4dp"
+                android:src="@drawable/ic_microphone_black_48dp" />
+
+            <ImageView
+                android:id="@+id/img_cart"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_baseline_add_shopping_cart_24" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
 
     <LinearLayout
         android:id="@+id/app"

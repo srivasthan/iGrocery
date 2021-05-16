@@ -30,8 +30,8 @@
             android:theme="@style/Theme.IGrocery" />
         <activity
             android:name=".ui.HomeActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.IGrocery" />
+            android:theme="@style/Theme.IGrocery"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.SplashScreen"
             android:screenOrientation="portrait"

@@ -5,10 +5,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.View
-import android.widget.*
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import com.like.LikeButton
 import com.skyhope.showmoretextview.ShowMoreTextView
 import com.task.igrocery.Model.CartModel
 import com.task.igrocery.Model.LikeModel
@@ -37,7 +41,8 @@ class ProductViewActivity : AppCompatActivity() {
         val itemPrice: TextView = findViewById(R.id.txt_amount)
         val imgBack: ImageView = findViewById(R.id.img_back)
         val imgCart: ImageView = findViewById(R.id.img_cart)
-        val imgLike: LikeButton = findViewById(R.id.isLoved)
+        val imgLike: ImageView = findViewById(R.id.isLoved)
+        val imgUnLike: ImageView = findViewById(R.id.ic_unlike)
         val addButton: Button = findViewById(R.id.btnPurchase)
         val rtlQuantity: RelativeLayout = findViewById(R.id.rtl_quantity)
         val plusButton: Button = findViewById(R.id.btn_plus)
@@ -67,44 +72,45 @@ class ProductViewActivity : AppCompatActivity() {
         if (likeDataBase.listLike().size > 0) {
 
             for (element in likeDataBase.listLike()) {
-                imgLike.isLiked = element.name == name
+                if (element.name.equals(name)) {
+                    imgLike.visibility = View.GONE
+                    imgUnLike.visibility = View.VISIBLE
+                }
             }
         }
 
         imgLike.setOnClickListener {
+
+            imgLike.visibility = View.GONE
+            imgUnLike.visibility = View.VISIBLE
+            likeDataBase.addLikeItems(
+                LikeModel(
+                    image!!,
+                    name!!,
+                    price!!,
+                    "liked"
+                )
+            )
+
+        }
+
+        imgUnLike.setOnClickListener {
 
             if (likeDataBase.listLike().size > 0) {
 
                 for (element in likeDataBase.listLike()) {
                     if (element.name == name) {
                         likeId = element.id
-                        imgLike.isLiked = false
+                        imgLike.visibility = View.VISIBLE
+                        imgUnLike.visibility = View.GONE
                         likeDataBase.deleteLikeProduct(likeId)
-                    } else {
-                        imgLike.isLiked = true
-                        likeDataBase.addLikeItems(
-                            LikeModel(
-                                image!!,
-                                name!!,
-                                price!!,
-                                "liked"
-                            )
-                        )
                     }
                 }
-            } else {
-                imgLike.isLiked = true
-                likeDataBase.addLikeItems(
-                    LikeModel(
-                        image!!,
-                        name!!,
-                        price!!,
-                        "liked"
-                    )
-                )
             }
 
         }
+
+
 
         if (dataBase.listProducts().size > 0) {
             for (element in dataBase.listProducts()) {
@@ -199,5 +205,5 @@ class ProductViewActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
-    
+
 }
